@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pour toi, Papa</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FAFAF8;
+    --card: #F2F0EB;
+    --border: #E0DDD5;
+    --text: #1A1A18;
+    --muted: #6B6B65;
+    --light: #9A9991;
+    --teal: #0F7A5A;
+    --teal-bg: #E4F5EE;
+    --blue: #1558A3;
+    --blue-bg: #EBF2FB;
+    --blue-border: #A8C5EC;
+    --warn: #C07010;
+    --warn-bg: #FEF3E2;
+    --warn-border: #F0C97A;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 5rem;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  .page { max-width: 620px; margin: 0 auto; }
+
+  .orb {
+    position: fixed; border-radius: 50%;
+    pointer-events: none; z-index: 0; opacity: .07;
+  }
+  .orb1 { width: 340px; height: 340px; background: #1558A3; top: -80px; right: -100px; animation: drift1 9s ease-in-out infinite; }
+  .orb2 { width: 260px; height: 260px; background: #0F7A5A; bottom: 100px; left: -80px; animation: drift2 11s ease-in-out infinite; }
+  .orb3 { width: 180px; height: 180px; background: #B06E10; top: 50%; left: 60%; animation: drift3 7s ease-in-out infinite; }
+  @keyframes drift1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-30px,25px) scale(1.08)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(25px,-20px) scale(1.05)} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-15px,20px)} }
+  .page > * { position: relative; z-index: 1; }
+
+  .hero {
+    text-align: center; padding: 2.5rem 2rem;
+    background: var(--card); border: 0.5px solid var(--border); border-radius: 16px;
+    margin-bottom: 1.5rem;
+    animation: slideDown .7s cubic-bezier(.22,1,.36,1) both;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .hero:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,.07); }
+  .heart { font-size: 28px; display: block; margin-bottom: 14px; animation: heartbeat 1.4s ease infinite; }
+  @keyframes heartbeat {
+    0%,100%{transform:scale(1)} 14%{transform:scale(1.25)} 28%{transform:scale(1)} 42%{transform:scale(1.15)} 56%{transform:scale(1)}
+  }
+  .eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: .1em; color: var(--light); margin-bottom: 10px; animation: fadeIn 1s .3s both; }
+  .hero h1 {
+    font-size: 26px; font-weight: 700; letter-spacing: -.025em; margin-bottom: 10px;
+    background: linear-gradient(135deg, #1A1A18 40%, #1558A3);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: fadeIn 1s .4s both;
+  }
+  .hero p { font-size: 14px; color: var(--muted); max-width: 360px; margin: 0 auto; line-height: 1.7; animation: fadeIn 1s .5s both; }
+
+  .block { margin-bottom: 1.5rem; }
+  .block-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--light); margin-bottom: 10px; padding-left: 2px; }
+
+  .count-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+  .count-cell {
+    background: var(--card); border: 0.5px solid var(--border); border-radius: 12px;
+    padding: 14px 6px; text-align: center;
+    transition: transform .2s ease, box-shadow .2s ease; cursor: default;
+  }
+  .count-cell:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+  .count-num { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1; margin-bottom: 5px; }
+  .count-num.bump { animation: bump .25s ease; }
+  @keyframes bump { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1)} }
+  .count-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--light); }
+  .bday-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 9px; }
+
+  .progress-wrap { margin-bottom: 1.5rem; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
+  .progress-track { height: 8px; background: var(--card); border: 0.5px solid var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--teal) 0%, var(--blue) 100%); transition: width 1.8s cubic-bezier(.22,1,.36,1); }
+
+  .timeline { display: flex; flex-direction: column; gap: 7px; }
+  .tl-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    padding: 12px 14px; background: var(--card); border: 0.5px solid var(--border); border-radius: 12px;
+    opacity: 0; transform: translateX(-24px);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .tl-item.visible { animation: slideRight .5s cubic-bezier(.22,1,.36,1) forwards; }
+  .tl-item.future.visible { animation: slideRight .5s cubic-bezier(.22,1,.36,1) forwards; filter: opacity(.62); }
+  .tl-item:not(.future):hover { transform: translateX(6px) !important; box-shadow: 0 4px 16px rgba(0,0,0,.06); border-color: var(--blue-border); }
+  @keyframes slideRight { to { opacity:1; transform:translateX(0); } }
+  .tl-em { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .tl-body { flex: 1; min-width: 0; }
+  .tl-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+  .tl-name { font-size: 13px; font-weight: 600; }
+  .tl-yr { font-size: 11px; color: var(--light); }
+  .tl-sub { font-size: 12px; color: var(--muted); }
+  .chk {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+    background: var(--teal-bg); color: var(--teal); font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; margin-top: 2px;
+  }
+
+  .dev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .dev-card {
+    background: var(--card); border: 0.5px solid var(--border); border-radius: 12px; padding: 14px;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .dev-card:hover { transform: translateY(-4px); box-shadow: 0 8px 22px rgba(0,0,0,.08); }
+  .dev-card.warn { background: var(--warn-bg); border-color: var(--warn-border); }
+  .dev-ico { font-size: 26px; margin-bottom: 8px; animation: wiggle 4s 2s ease infinite; }
+  .dev-card.warn .dev-ico { animation: shake 3s 1s ease infinite; }
+  @keyframes wiggle { 0%,88%,100%{transform:rotate(0)} 91%{transform:rotate(-8deg)} 94%{transform:rotate(6deg)} 97%{transform:rotate(-3deg)} }
+  @keyframes shake { 0%,82%,100%{transform:translateX(0)} 86%{transform:translateX(-4px)} 90%{transform:translateX(4px)} 94%{transform:translateX(-2px)} }
+  .dev-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .dev-role { font-size: 11px; color: var(--muted); }
+  .dev-tag-ok { font-size: 11px; color: var(--teal); margin-top: 6px; font-weight: 600; }
+  .dev-tag-warn { font-size: 11px; color: var(--warn); margin-top: 6px; font-weight: 600; }
+
+  .wish {
+    background: var(--blue-bg); border: 1.5px solid var(--blue-border); border-radius: 16px;
+    padding: 1.5rem; margin-bottom: 1.5rem;
+    opacity: 0; transform: translateY(24px);
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .wish.visible { animation: riseUp .7s cubic-bezier(.22,1,.36,1) forwards; }
+  @keyframes riseUp { to { opacity:1; transform:translateY(0); } }
+  .wish:hover { transform: translateY(-4px) !important; box-shadow: 0 14px 40px rgba(21,88,163,.13); }
+  .wish-badge {
+    display: inline-block; background: var(--blue); color: #fff;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    padding: 4px 10px; border-radius: 20px; margin-bottom: 14px;
+    animation: glow 2.5s ease infinite;
+  }
+  @keyframes glow { 0%,100%{box-shadow:0 0 0 0 rgba(21,88,163,0)} 50%{box-shadow:0 0 0 5px rgba(21,88,163,.15)} }
+  .wish-body { display: flex; gap: 16px; align-items: flex-start; }
+  .wish-ico { font-size: 44px; flex-shrink: 0; animation: float 3.5s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .wish-product { font-size: 19px; font-weight: 800; letter-spacing: -.025em; margin-bottom: 7px; }
+  .wish-desc { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 12px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    font-size: 11px; font-weight: 500; padding: 3px 9px;
+    background: rgba(255,255,255,.8); border: 0.5px solid var(--blue-border);
+    border-radius: 20px; color: var(--blue);
+    transition: transform .2s ease, background .2s ease;
+  }
+  .tag:hover { transform: scale(1.08); background: #fff; }
+  .wish-quote {
+    font-size: 13px; color: var(--muted); border-top: 0.5px solid var(--blue-border);
+    padding-top: 14px; margin-top: 16px; font-style: italic; line-height: 1.75;
+  }
+
+  .signature {
+    text-align: center; padding: 2rem 1rem 1.5rem;
+    opacity: 0; transform: translateY(16px);
+    animation: riseUp .8s cubic-bezier(.22,1,.36,1) 1.2s forwards;
+  }
+  .sig-heart { font-size: 32px; display: block; margin-bottom: 10px; animation: heartbeat 1.4s ease infinite; }
+  .sig-text { font-size: 13px; color: var(--muted); margin-bottom: 4px; font-style: italic; }
+  .sig-name {
+    font-size: 28px; font-weight: 800; letter-spacing: -.02em;
+    background: linear-gradient(135deg, #1558A3, #0F7A5A);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .footer { text-align: center; font-size: 12px; color: var(--light); padding-top: 8px; }
+
+  @keyframes slideDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  @media (max-width: 440px) {
+    .count-num { font-size: 21px; }
+    .dev-grid { grid-template-columns: 1fr; }
+    .wish-body { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<div class="page">
+
+  <div class="hero">
+    <span class="heart">♥</span>
+    <div class="eyebrow">Un message spécial pour toi</div>
+    <h1>Papa, voici mon parcours</h1>
+    <p>Tout ce que tu investis en moi, je veux que tu puisses le voir clairement — et en être fier.</p>
+  </div>
+
+  <div class="block">
+    <div class="block-title">⏳ Compte à rebours — mon anniversaire</div>
+    <div class="count-grid">
+      <div class="count-cell"><div class="count-num" id="days">--</div><div class="count-lbl">Jours</div></div>
+      <div class="count-cell"><div class="count-num" id="hours">--</div><div class="count-lbl">Heures</div></div>
+      <div class="count-cell"><div class="count-num" id="minutes">--</div><div class="count-lbl">Minutes</div></div>
+      <div class="count-cell"><div class="count-num" id="seconds">--</div><div class="count-lbl">Secondes</div></div>
+    </div>
+    <p class="bday-note">📅 13 octobre 2026 · Passage en 3ème année</p>
+  </div>
+
+  <div class="block progress-wrap">
+    <div class="block-title">📈 Progression vers le Master</div>
+    <div class="progress-label">
+      <span>Départ (Bac)</span>
+      <span id="pct-label">0%</span>
+      <span>Master obtenu</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill"></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">📚 Mon parcours académique</div>
+    <div class="timeline">
+      <div class="tl-item" data-idx="0">
+        <div class="tl-em">🎓</div>
+        <div class="tl-body">
+          <div class="tl-row"><span class="tl-name">Baccalauréat</span><span class="tl-yr">2022</span></div>
+          <div class="tl-sub">Diplôme obtenu — point de départ</div>
+        </div>
+        <div class="chk">✓</div>
+      </div>
+      <div class="tl-item" data-idx="1">
+        <div class="tl-em">📖</div>
+        <div class="tl-body">
+          <div class="tl-row"><span class="tl-name">1ère année</span><span class="tl-yr">2024</span></div>
+          <div class="tl-sub">Commerce International & E-Business — validée</div>
+        </div>
+        <div class="chk">✓</div>
+      </div>
+      <div class="tl-item" data-idx="2">
+        <div class="tl-em">⚡</div>
+        <div class="tl-body">
+          <div class="tl-row"><span class="tl-name">2ème année</span><span class="tl-yr">2025–2026</span></div>
+          <div class="tl-sub">Commerce International & E-Business — en cours, cap maintenu</div>
+        </div>
+        <div class="chk">✓</div>
+      </div>
+      <div class="tl-item future" data-idx="3">
+        <div class="tl-em">🚀</div>
+        <div class="tl-body">
+          <div class="tl-row"><span class="tl-name">3ème année</span><span class="tl-yr">Oct 2026</span></div>
+          <div class="tl-sub">Licence 3 — mon prochain cap</div>
+        </div>
+      </div>
+      <div class="tl-item future" data-idx="4">
+        <div class="tl-em">🏆</div>
+        <div class="tl-body">
+          <div class="tl-row"><span class="tl-name">Master</span><span class="tl-yr">2027+</span></div>
+          <div class="tl-sub">Management de la Qualité — objectif final</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="block-title">📱 Mon équipement actuel</div>
+    <div class="dev-grid">
+      <div class="dev-card">
+        <div class="dev-ico">🖥️</div>
+        <div class="dev-name">Samsung Tab S8</div>
+        <div class="dev-role">Cours & travaux universitaires</div>
+        <div class="dev-tag-ok">✓ Opérationnelle</div>
+      </div>
+      <div class="dev-card warn">
+        <div class="dev-ico">📵</div>
+        <div class="dev-name">Samsung S24 FE</div>
+        <div class="dev-role">Téléphone actuel</div>
+        <div class="dev-tag-warn">⚠ Stockage saturé</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wish" id="wish-card">
+    <div class="wish-badge">🎁 Mon vœu d'anniversaire</div>
+    <div class="wish-body">
+      <div class="wish-ico">📱</div>
+      <div>
+        <div class="wish-product">iPhone 15 Pro — 512 Go</div>
+        <div class="wish-desc">512 Go pour ne plus jamais être bloqué par le stockage. Un appareil pris en charge par Apple pendant 5 à 6 ans — de quoi couvrir la fin de ma licence, tout le Master, et bien au-delà. Ce n'est pas un caprice, c'est un investissement solide.</div>
+        <div class="tags">
+          <span class="tag">Stockage suffisant</span>
+          <span class="tag">Dure 5–6 ans</span>
+          <span class="tag">Mon seul vœu</span>
+          <span class="tag">Jusqu'au Master</span>
+        </div>
+      </div>
+    </div>
+    <div class="wish-quote">Papa, tu m'as toujours donné les bons outils pour avancer, et je ne l'oublie pas. Je tiens mon cap sérieusement. Ce téléphone, c'est le dernier maillon pour que je continue dans les meilleures conditions jusqu'au bout de mon Master.</div>
+  </div>
+
+  <div class="signature">
+    <div class="sig-heart">♥</div>
+    <div class="sig-text">Ta fille qui t'aime</div>
+    <div class="sig-name">Aman</div>
+  </div>
+
+  <div class="footer">Fait avec amour · 13 octobre 2026</div>
+</div>
+<script>
+  var TARGET = new Date("2026-10-13T00:00:00");
+  var prev = {};
+  function pad(n){ return String(n).padStart(2,"0"); }
+  function tick(){
+    var d = Math.max(0, TARGET - new Date());
+    var v = { days: Math.floor(d/86400000), hours: Math.floor(d%86400000/3600000), minutes: Math.floor(d%3600000/60000), seconds: Math.floor(d%60000/1000) };
+    ["days","hours","minutes","seconds"].forEach(function(k){
+      var el = document.getElementById(k), s = pad(v[k]);
+      if(s !== prev[k]){ el.textContent = s; el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); prev[k] = s; }
+    });
+  }
+  tick(); setInterval(tick, 1000);
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting) return;
+      var el = e.target, idx = parseInt(el.dataset.idx||0);
+      setTimeout(function(){ el.classList.add("visible"); }, idx*130);
+      io.unobserve(el);
+    });
+  },{ threshold:0.15 });
+  document.querySelectorAll(".tl-item").forEach(function(el){ io.observe(el); });
+
+  var wo = new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting){ entries[0].target.classList.add("visible"); wo.disconnect(); }
+  },{ threshold:0.2 });
+  wo.observe(document.getElementById("wish-card"));
+
+  setTimeout(function(){
+    var fill = document.getElementById("prog-fill"), lbl = document.getElementById("pct-label"), n=0;
+    fill.style.width = "40%";
+    var t = setInterval(function(){ lbl.textContent = (++n)+"%"; if(n>=40) clearInterval(t); }, 45);
+  }, 700);
+</script>
+</body>
+</html>
